@@ -1,5 +1,5 @@
 ARG VERSION=2.1.0
-FROM developmentseed/geolambda:${VERSION}
+FROM manuelthejesus/geolambda:${VERSION}
 
 LABEL maintainer="Development Seed <info@developmentseed.org>"
 LABEL authors="Matthew Hanson  <matt.a.hanson@gmail.com>"

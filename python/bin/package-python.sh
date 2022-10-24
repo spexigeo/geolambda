@@ -18,11 +18,11 @@ rsync -ax $PREFIX/share/gdal $DEPLOY_DIR/share/
 rsync -ax $PREFIX/share/proj $DEPLOY_DIR/share/
 
 # Get Python version
-PYVERSION=$(cat /root/.pyenv/version)
+PYVERSION=3.7.9
 MAJOR=${PYVERSION%%.*}
 MINOR=${PYVERSION#*.}
 PYVER=${PYVERSION%%.*}.${MINOR%%.*}
-PYPATH=/root/.pyenv/versions/$PYVERSION/lib/python${PYVER}/site-packages/
+PYPATH=/var/lang/lib/python${PYVER}/site-packages/
 
 echo Creating deploy package for Python $PYVERSION
 

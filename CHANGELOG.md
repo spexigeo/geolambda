@@ -4,7 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## 2.1.0 - 2022-10-24
+
+### Added
+- Poppler installation for PDF support
+- GDAL 3.2.1 built with flag `--with-poppler` to support PDF
+- Forcing installation on some libraries with expired certificates
+- gdal2tiles module added on python layer 
+
+## [Unreleased] - 2018-12-20
 
 ### Added
 - Added deployments to `eu-west-2` and `eu-north-1`

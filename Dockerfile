@@ -1,4 +1,4 @@
-FROM lambci/lambda:build-provided
+FROM lambci/lambda:build-python3.7
 
 LABEL maintainer="Development Seed <info@developmentseed.org>"
 LABEL authors="Matthew Hanson  <matt.a.hanson@gmail.com>"
@@ -28,7 +28,18 @@ ENV \
     SZIP_VERSION=2.1.1 \
     WEBP_VERSION=1.1.0 \
     ZSTD_VERSION=1.4.5 \
-    OPENSSL_VERSION=1.1.1
+    OPENSSL_VERSION=1.1.1 \
+    POPPLER_VERSION=0.44.0 \
+    DEPOT_TOOLS_URL="https://chromium.googlesource.com/chromium/tools/depot_tools.git" \
+    DEPOT_TOOLS_DIR="$PWD/depot_tools" \
+    PDFIUM_URL="https://pdfium.googlesource.com/pdfium.git" \
+    PDFIUM_DIR="$PWD/pdfium" \
+    REV="chromium/4272" \
+    PATCH_1="$PWD/code.patch" \
+    PATCH_2="$PWD/build_linux.patch" \
+    ARGS="$PWD/args_release_linux.gn" \
+    BUILD_DIR="$PDFIUM_DIR/output/Release" \
+    INSTALL_DIR="$PWD/install"
 
 # Paths to things
 ENV \
@@ -47,8 +58,8 @@ WORKDIR /build
 # pkg-config - version > 2.5 required for GDAL 2.3+
 RUN \
     mkdir pkg-config; \
-    wget -qO- https://pkg-config.freedesktop.org/releases/pkg-config-$PKGCONFIG_VERSION.tar.gz \
-        | tar xvz -C pkg-config --strip-components=1; cd pkg-config; \
+    wget -qO- https://pkg-config.freedesktop.org/releases/pkg-config-$PKGCONFIG_VERSION.tar.gz --no-check-certificate \
+    | tar xvz -C pkg-config --strip-components=1; cd pkg-config; \
     ./configure --prefix=$PREFIX CFLAGS="-O2 -Os"; \
     make -j ${NPROC} install; \
     cd ../; rm -rf pkg-config
@@ -56,7 +67,7 @@ RUN \
 # sqlite3 (required by proj)
 RUN \
     mkdir sqlite3; \
-    wget -qO- https://www.sqlite.org/2020/sqlite-autoconf-3330000.tar.gz \
+    wget -qO- https://www.sqlite.org/2020/sqlite-autoconf-3330000.tar.gz --no-check-certificate \
         | tar xvz -C sqlite3 --strip-components=1; cd sqlite3; \
     ./configure --prefix=$PREFIX; \
     make; make install; \
@@ -180,12 +191,23 @@ RUN \
 # geotiff
 RUN \
     mkdir geotiff; \
-    wget -qO- https://download.osgeo.org/geotiff/libgeotiff/libgeotiff-$GEOTIFF_VERSION.tar.gz \
+    wget -qO- https://download.osgeo.org/geotiff/libgeotiff/libgeotiff-$GEOTIFF_VERSION.tar.gz --no-check-certificate \
         | tar xvz -C geotiff --strip-components=1; cd geotiff; \
     ./configure --prefix=${PREFIX} \
         --with-proj=${PREFIX} --with-jpeg=${PREFIX} --with-zip=yes;\
     make -j ${NPROC} install; \
     cd ${BUILD}; rm -rf geotiff
+
+# poppler for geoPDFs
+RUN \
+    mkdir poppler; \
+    wget https://poppler.freedesktop.org/poppler-${POPPLER_VERSION}.tar.xz --no-check-certificate; \
+    tar -xf poppler-${POPPLER_VERSION}.tar.xz; \
+    cd poppler-${POPPLER_VERSION}; \
+    ./configure --enable-xpdf-headers; \
+    make; \
+    make install; \
+    cd ${BUILD}; rm -rf poppler
 
 # GDAL
 RUN \
@@ -212,6 +234,7 @@ RUN \
         --disable-driver-elastic \
         --with-geos=$PREFIX/bin/geos-config \
         --with-hide-internal-symbols=yes \
+        --with-poppler \
         CFLAGS="-O2 -Os" CXXFLAGS="-O2 -Os" \
         LDFLAGS="-Wl,-rpath,'\$\$ORIGIN'"; \
     make -j ${NPROC} install; \
