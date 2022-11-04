@@ -175,3 +175,18 @@ $ aws lambda add-layer-version-permission --layer-name geolambda \
 	--statement-id public --version-number 1 --principal '*' \
 	--action lambda:GetLayerVersion
 ```
+
+### Lambda Configuration
+
+Now that you have your 2 .zip files, you need to add them as layers on Lambda, using `python3.7` as runtime.
+
+Create a new function an add these two layers to it. 
+
+It's very important to increase the timeout and memory on `General Configurations`. Right now I'm using 15 min and 3072MB.
+
+Configure the function with the following environmental variables:
+- GDAL_DATA	/opt/share/gdal
+- PROJ_LIB	/opt/share/proj
+- SPEXI_API_URL	https://staging.api.spexigeo.com/ - For the staging function
+- SPEXI_EMAIL	`Your Spexi email`
+- SPEXI_PASSWORD	`Your Spexi password`
