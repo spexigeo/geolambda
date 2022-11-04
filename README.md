@@ -190,3 +190,5 @@ Configure the function with the following environmental variables:
 - SPEXI_API_URL	https://staging.api.spexigeo.com/ - For the staging function
 - SPEXI_EMAIL	`Your Spexi email`
 - SPEXI_PASSWORD	`Your Spexi password`
+
+Copy and paste in the lambda function terminal the code at `lambda_function.py`.
