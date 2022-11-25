@@ -192,3 +192,5 @@ Configure the function with the following environmental variables:
 - SPEXI_PASSWORD	`Your Spexi password`
 
 Copy and paste in the lambda function terminal the code at `lambda_function.py`.
+
+NOTE: Make sure that you add an enviromental variable call `DEFAULT_PDF_BUCKET_ID` to the API EBS with the name of the PDF bucket.
